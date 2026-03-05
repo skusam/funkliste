@@ -1,6 +1,147 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="80" fill="#cc0000"/>
-  <text x="256" y="300" font-family="Arial, sans-serif" font-size="220" font-weight="700"
-        text-anchor="middle" fill="#ffffff">FW</text>
-  <text x="256" y="180" font-size="160" text-anchor="middle">🚒</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+    <linearGradient id="truckGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff5555"/>
+      <stop offset="100%" style="stop-color:#cc0000"/>
+    </linearGradient>
+    <linearGradient id="cabGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff5555"/>
+      <stop offset="100%" style="stop-color:#cc0000"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softglow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="shadow">
+      <feDropShadow dx="2" dy="4" stdDeviation="5" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="110" ry="110" fill="url(#bgGrad)"/>
+  <radialGradient id="bgGlow" cx="50%" cy="55%" r="50%">
+    <stop offset="0%" style="stop-color:#ff2200;stop-opacity:0.08"/>
+    <stop offset="100%" style="stop-color:#000000;stop-opacity:0"/>
+  </radialGradient>
+  <rect width="512" height="512" rx="110" ry="110" fill="url(#bgGlow)"/>
+
+  <!-- ============================================================ -->
+  <!-- TRUCK — body bottom at y=390, top at y=215, cab top at y=175 -->
+  <!-- ============================================================ -->
+
+  <!-- Ladder on roof -->
+  <rect x="46" y="202" width="215" height="13" rx="3" fill="#cccccc" opacity="0.85"/>
+  <line x1="72"  y1="202" x2="72"  y2="215" stroke="#aaa" stroke-width="2.5"/>
+  <line x1="97"  y1="202" x2="97"  y2="215" stroke="#aaa" stroke-width="2.5"/>
+  <line x1="122" y1="202" x2="122" y2="215" stroke="#aaa" stroke-width="2.5"/>
+  <line x1="147" y1="202" x2="147" y2="215" stroke="#aaa" stroke-width="2.5"/>
+  <line x1="172" y1="202" x2="172" y2="215" stroke="#aaa" stroke-width="2.5"/>
+  <line x1="197" y1="202" x2="197" y2="215" stroke="#aaa" stroke-width="2.5"/>
+  <line x1="222" y1="202" x2="222" y2="215" stroke="#aaa" stroke-width="2.5"/>
+  <line x1="247" y1="202" x2="247" y2="215" stroke="#aaa" stroke-width="2.5"/>
+
+  <!-- ---- Combined truck body + cab as one connected shape ---- -->
+  <!-- Rear body rectangle merged with cab trapezoid via a single path -->
+  <!-- Body: x46–316, y215–335. Cab: x308–456, y175–335 (same bottom) -->
+  <path d="
+    M54,335
+    L54,215 L261,215 L261,215
+    L308,215 L308,178 Q308,175 314,175
+    L392,175 Q414,175 424,198
+    L436,215 L436,335
+    Q436,342 429,342
+    L61,342
+    Q54,342 54,335 Z
+  " fill="url(#truckGrad)" filter="url(#shadow)"/>
+
+  <!-- Windshield -->
+  <path d="M318,213 L318,186 Q318,180 324,180 L384,180 Q400,180 408,194 L414,213 Z"
+        fill="#aaddff" opacity="0.6"/>
+
+  <!-- Door divider line (cab / body separation) -->
+  <line x1="308" y1="215" x2="308" y2="340" stroke="#aa1111" stroke-width="2.5"/>
+
+  <!-- Cab door window -->
+  <rect x="318" y="220" width="62" height="38" rx="5" fill="#aaddff" opacity="0.45"/>
+
+  <!-- 112 on driver door -->
+  <text x="360" y="318" font-family="Arial Black, sans-serif" font-size="26" font-weight="900"
+        fill="white" text-anchor="middle" opacity="0.95" filter="url(#glow)">112</text>
+
+  <!-- White stripe across full truck -->
+  <rect x="54" y="278" width="382" height="15" rx="0" fill="white" opacity="0.12"/>
+
+  <!-- Equipment boxes on body -->
+  <rect x="56" y="222" width="72" height="50" rx="4" fill="#aa0000"/>
+  <rect x="60" y="226" width="64" height="42" rx="3" fill="#bb1111"/>
+  <!-- Hose reel -->
+  <circle cx="92" cy="247" r="14" fill="none" stroke="#ffaa44" stroke-width="3"/>
+  <circle cx="92" cy="247" r="5"  fill="#ffaa44"/>
+
+  <rect x="136" y="222" width="70" height="50" rx="4" fill="#aa0000"/>
+  <rect x="140" y="226" width="62" height="42" rx="3" fill="#bb1111"/>
+
+  <rect x="214" y="222" width="70" height="50" rx="4" fill="#aa0000"/>
+  <rect x="218" y="226" width="62" height="42" rx="3" fill="#bb1111"/>
+
+  <!-- SOTTRUM — lower on body, in foreground (drawn after boxes) -->
+  <text x="178" y="318" font-family="Arial Black, sans-serif" font-size="21" font-weight="900"
+        fill="white" text-anchor="middle" letter-spacing="6"
+        opacity="0.98" filter="url(#glow)">SOTTRUM</text>
+
+  <!-- Single blue light on cab roof -->
+  <rect x="355" y="159" width="32" height="18" rx="9" fill="#222"/>
+  <circle cx="371" cy="168" r="9" fill="#4488ff" filter="url(#glow)"/>
+  <circle cx="371" cy="168" r="5" fill="#cce4ff" opacity="0.85"/>
+
+  <!-- ---- ANTENNA near cab/body junction ---- -->
+  <!-- Base on roof at x=300 -->
+  <rect x="296" y="207" width="8" height="11" rx="2" fill="#bbbbbb"/>
+  <!-- Mast — shorter, to y=162 -->
+  <line x1="300" y1="207" x2="300" y2="162" stroke="#cccccc" stroke-width="3" stroke-linecap="round"/>
+  <!-- Tip -->
+  <circle cx="300" cy="160" r="4" fill="#ffffff" filter="url(#glow)"/>
+
+  <!-- 3 arcs going upward from antenna tip -->
+  <g filter="url(#softglow)" opacity="0.93">
+    <path d="M288,154 Q300,143 312,154" fill="none" stroke="#00ff99" stroke-width="2.8" stroke-linecap="round"/>
+    <path d="M278,144 Q300,128 322,144" fill="none" stroke="#00ff99" stroke-width="2.3" stroke-linecap="round"/>
+    <path d="M268,134 Q300,113 332,134" fill="none" stroke="#00ff99" stroke-width="1.8" stroke-linecap="round" opacity="0.72"/>
+  </g>
+
+  <!-- Undercarriage -->
+  <rect x="46" y="338" width="392" height="10" rx="3" fill="#880000"/>
+
+  <!-- Wheels -->
+  <circle cx="118" cy="362" r="30" fill="#1a1a1a"/>
+  <circle cx="118" cy="362" r="20" fill="#333"/>
+  <circle cx="118" cy="362" r="9"  fill="#666"/>
+
+  <circle cx="318" cy="362" r="30" fill="#1a1a1a"/>
+  <circle cx="318" cy="362" r="20" fill="#333"/>
+  <circle cx="318" cy="362" r="9"  fill="#666"/>
+
+  <circle cx="386" cy="362" r="30" fill="#1a1a1a"/>
+  <circle cx="386" cy="362" r="20" fill="#333"/>
+  <circle cx="386" cy="362" r="9"  fill="#666"/>
+
+
+
+  <!-- Bottom label -->
+  <text x="256" y="492" font-family="Arial Black, sans-serif" font-size="22" font-weight="900"
+        fill="white" text-anchor="middle" letter-spacing="6" filter="url(#glow)">FEUERWEHR</text>
 </svg>
