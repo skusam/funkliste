@@ -1,0 +1,18 @@
+{
+  "name": "Funkrufnummern SG Sottrum",
+  "short_name": "Funkliste",
+  "description": "Funkrufnummern der Feuerwehr SG Sottrum",
+  "start_url": "./funkliste.html",
+  "display": "standalone",
+  "background_color": "#cc0000",
+  "theme_color": "#cc0000",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

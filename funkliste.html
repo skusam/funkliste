@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Funkrufnummern – SG Sottrum</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Funkliste">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #cc0000;
+      --red-dark: #990000;
+      --red-light: #fff0f0;
+      --gray: #555;
+      --border: #ddd;
+      --bg: #f5f5f5;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: #222;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    /* ── Passwort-Bildschirm ── */
+    #unlock-screen {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.25rem;
+      background: var(--bg);
+    }
+
+    .unlock-box {
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      padding: 2rem 1.75rem;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+
+    .unlock-logo {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .unlock-box h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--red);
+      margin-bottom: 0.25rem;
+    }
+
+    .unlock-box p {
+      font-size: 0.82rem;
+      color: var(--gray);
+      margin-bottom: 1.5rem;
+    }
+
+    #passwordInput {
+      width: 100%;
+      font-size: 1.1rem;
+      padding: 0.6rem 0.85rem;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      outline: none;
+      transition: border-color 0.15s;
+      margin-bottom: 0.75rem;
+      color: #111;
+      background: #fff;
+    }
+    #passwordInput:focus { border-color: var(--red); }
+
+    #unlockBtn {
+      width: 100%;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 0.65rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    #unlockBtn:hover { background: var(--red-dark); }
+
+    #errorMsg {
+      display: none;
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--red);
+      font-weight: 600;
+    }
+
+    /* ── App ── */
+    #app { display: none; }
+
+    header {
+      background: var(--red);
+      color: #fff;
+      padding: 1rem 1.25rem 1.25rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    header h1 {
+      font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    header p {
+      font-size: 0.8rem;
+      opacity: 0.85;
+      margin-top: 0.2rem;
+    }
+
+    .search-wrap {
+      background: var(--red-dark);
+      padding: 0.9rem 1.25rem;
+    }
+
+    .search-wrap label {
+      display: block;
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    #searchInput {
+      flex: 1;
+      font-size: 1.25rem;
+      font-family: "Courier New", monospace;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 0.55rem 0.75rem;
+      border: 3px solid transparent;
+      border-radius: 6px;
+      outline: none;
+      transition: border-color 0.15s;
+      background: #fff;
+      color: #111;
+    }
+
+    #searchInput:focus { border-color: #ffcc00; }
+    #searchInput::placeholder { font-weight: 400; color: #aaa; letter-spacing: 0; }
+
+    #clearBtn, #favFilterBtn {
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.5);
+      color: #fff;
+      border-radius: 6px;
+      width: 2.5rem;
+      height: 2.5rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    #clearBtn:hover, #favFilterBtn:hover { background: rgba(255,255,255,0.35); }
+    #favFilterBtn.active { background: #ffaa00; border-color: #ffaa00; color: #000; }
+
+    #resultCount {
+      color: rgba(255,255,255,0.8);
+      font-size: 0.75rem;
+      margin-top: 0.4rem;
+    }
+
+    main {
+      padding: 1rem 1rem 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      margin-bottom: 0.35rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.4rem 0.85rem;
+      flex-wrap: wrap;
+    }
+    .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+    .card.is-fav { border-left: 3px solid #ffaa00; background: #fffdf5; }
+
+    .rufnr {
+      font-family: "Courier New", monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--red);
+      white-space: nowrap;
+      min-width: 7rem;
+    }
+
+    .rufnr mark {
+      background: #ffee00;
+      color: #000;
+      border-radius: 2px;
+      padding: 0 1px;
+    }
+
+    .fahrzeug {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #222;
+      white-space: nowrap;
+      min-width: 7rem;
+    }
+
+    .ort {
+      font-size: 0.9rem;
+      color: #555;
+      flex: 1;
+    }
+
+    .fav-btn {
+      margin-left: auto;
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      line-height: 1;
+      padding: 0.15rem 0.2rem;
+      opacity: 0.25;
+      transition: opacity 0.15s, transform 0.15s;
+      color: #ffaa00;
+    }
+    .fav-btn:hover { opacity: 0.6; transform: scale(1.2); }
+    .fav-btn.active { opacity: 1; }
+
+    mark {
+      background: #ffee00;
+      color: #000;
+      border-radius: 2px;
+      padding: 0 1px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #999;
+      font-size: 1rem;
+    }
+
+    .group-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--red);
+      padding: 0.5rem 0 0.3rem;
+      border-bottom: 2px solid var(--red);
+      margin-bottom: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    .group-label:first-child { margin-top: 0; }
+
+    @media (max-width: 480px) {
+      .rufnr { min-width: 6rem; }
+      .fahrzeug { min-width: 5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Passwort-Bildschirm ── -->
+<div id="unlock-screen">
+  <div class="unlock-box">
+    <div class="unlock-logo">&#128652;</div>
+    <h1>Feuerwehr SG Sottrum</h1>
+    <p>Funkrufnummern – bitte Passwort eingeben</p>
+    <input id="passwordInput" type="password" placeholder="Passwort" autocomplete="current-password">
+    <button id="unlockBtn">Entsperren</button>
+    <div id="errorMsg">Falsches Passwort.</div>
+  </div>
+</div>
+
+<!-- ── App (wird nach Entsperren eingeblendet) ── -->
+<div id="app">
+  <header>
+    <h1>&#128652; Feuerwehr SG Sottrum</h1>
+    <p>Funkrufnummern &ndash; Stand: Dezember 2025</p>
+  </header>
+
+  <div class="search-wrap">
+    <label for="searchInput">Suche</label>
+    <div class="search-row">
+      <input id="searchInput" type="search" placeholder="z. B. 36-47 oder Sottrum oder TLF"
+             autocomplete="off" autocorrect="off" spellcheck="false" inputmode="search">
+      <button id="favFilterBtn" title="Nur Favoriten anzeigen" aria-label="Nur Favoriten anzeigen" aria-pressed="false">&#x2605;</button>
+      <button id="clearBtn" title="Eingabe löschen" aria-label="Eingabe löschen">&#x2715;</button>
+    </div>
+    <div id="resultCount"></div>
+  </div>
+
+  <main id="results"></main>
+</div>
+
+<script>
+// ── Verschlüsselte Daten (wird von encrypt.js automatisch ersetzt) ──
+const ENCRYPTED = {"salt":"zfUFCTyrQkYoNiSwfDpSLw==","iv":"qk5V0V9xU6DkMmbe","data":"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"};
+
+// ── Entschlüsselung ──
+function base64ToBytes(b64) {
+  return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+}
+
+async function decryptData(password) {
+  const keyMaterial = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"]
+  );
+  const key = await crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt: base64ToBytes(ENCRYPTED.salt), iterations: 200000, hash: "SHA-256" },
+    keyMaterial,
+    { name: "AES-GCM", length: 256 },
+    false, ["decrypt"]
+  );
+  const decrypted = await crypto.subtle.decrypt(
+    { name: "AES-GCM", iv: base64ToBytes(ENCRYPTED.iv) },
+    key,
+    base64ToBytes(ENCRYPTED.data)
+  );
+  return JSON.parse(new TextDecoder().decode(decrypted));
+}
+
+// ── Unlock-Handler ──
+let DATA = [];
+const PW_KEY = "funkliste_pw";
+
+function unlock(data) {
+  DATA = data;
+  document.getElementById("unlock-screen").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  render("");
+}
+
+async function tryUnlock(password) {
+  const data = await decryptData(password); // wirft bei falschem Passwort
+  try { localStorage.setItem(PW_KEY, password); } catch (e) {}
+  unlock(data);
+}
+
+// Beim Laden: gespeichertes Passwort ausprobieren
+if (ENCRYPTED) {
+  const saved = localStorage.getItem(PW_KEY);
+  if (saved) {
+    decryptData(saved)
+      .then(data => unlock(data))
+      .catch(() => localStorage.removeItem(PW_KEY)); // ungültig → löschen
+  }
+}
+
+document.getElementById("unlockBtn").addEventListener("click", async () => {
+  const errorMsg = document.getElementById("errorMsg");
+  errorMsg.style.display = "none";
+
+  if (!ENCRYPTED) {
+    errorMsg.textContent = "Keine verschlüsselten Daten vorhanden. Bitte erst encrypt.js ausführen.";
+    errorMsg.style.display = "block";
+    return;
+  }
+
+  const password = document.getElementById("passwordInput").value;
+  try {
+    await tryUnlock(password);
+  } catch (e) {
+    errorMsg.textContent = "Falsches Passwort.";
+    errorMsg.style.display = "block";
+    document.getElementById("passwordInput").select();
+  }
+});
+
+document.getElementById("passwordInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") document.getElementById("unlockBtn").click();
+});
+
+// ── Favoriten ──
+const STORAGE_KEY = "funkliste_favs";
+let favs = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"));
+let favOnly = false;
+
+function saveFavs() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...favs]));
+  } catch (e) {
+    // privater Modus (z. B. Safari iOS) – Favoriten nur im Arbeitsspeicher
+  }
+}
+
+// ── Hilfsfunktionen ──
+function escapeHtml(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function highlight(text, query) {
+  if (!query) return escapeHtml(text);
+  const escaped = escapeHtml(text);
+  const re = new RegExp("(" + query.replace(/[-[\]{}()*+?.,\\^$|#\s]/g,"\\$&") + ")", "gi");
+  return escaped.replace(re, "<mark>$1</mark>");
+}
+
+function matches(entry, q) {
+  if (!q) return true;
+  const ql = q.toLowerCase();
+  const rufnrPlain = entry.rufnr.replace(/-/g, "");
+  const qPlain = ql.replace(/-/g, "");
+  if (rufnrPlain.includes(qPlain)) return true;
+  const haystack = [entry.rufnr, entry.ort, entry.fahrzeug].join(" ").toLowerCase();
+  return haystack.includes(ql);
+}
+
+// ── Rendering ──
+const searchInput  = document.getElementById("searchInput");
+const clearBtn     = document.getElementById("clearBtn");
+const favFilterBtn = document.getElementById("favFilterBtn");
+const resultsEl    = document.getElementById("results");
+const countEl      = document.getElementById("resultCount");
+
+function render(query) {
+  const q = query.trim();
+  let filtered = DATA.filter(e => matches(e, q));
+  if (favOnly) filtered = filtered.filter(e => favs.has(e.rufnr));
+
+  if (filtered.length === 0) {
+    const msg = favOnly ? "Keine Favoriten gefunden." : "Keine Eintr\u00e4ge gefunden.";
+    resultsEl.innerHTML = `<p class="empty">${msg}</p>`;
+    countEl.textContent = favOnly ? "0 Favoriten" : "0 Eintr\u00e4ge";
+    return;
+  }
+
+  const total = favOnly ? favs.size : DATA.length;
+  countEl.textContent = filtered.length === total
+    ? `${filtered.length} ${favOnly ? "Favorit(en)" : "Eintr\u00e4ge"}`
+    : `${filtered.length} von ${total} ${favOnly ? "Favorit(en)" : "Eintr\u00e4gen"}`;
+
+  const groups = {};
+  for (const e of filtered) {
+    if (!groups[e.gruppe]) groups[e.gruppe] = [];
+    groups[e.gruppe].push(e);
+  }
+
+  let html = "";
+  for (const [gruppe, entries] of Object.entries(groups)) {
+    html += `<div class="group-label">${escapeHtml(gruppe)}</div>`;
+    for (const e of entries) {
+      const isFav = favs.has(e.rufnr);
+      html += `
+        <div class="card${isFav ? " is-fav" : ""}" data-rufnr="${escapeHtml(e.rufnr)}">
+          <span class="rufnr">${highlight(e.rufnr, q)}</span>
+          <span class="fahrzeug">${highlight(e.fahrzeug, q)}</span>
+          <span class="ort">${highlight(e.ort, q)}</span>
+          <button class="fav-btn${isFav ? " active" : ""}" title="Favorit" aria-label="Als Favorit markieren">&#x2605;</button>
+        </div>`;
+    }
+  }
+
+  resultsEl.innerHTML = html;
+
+  resultsEl.querySelectorAll(".fav-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const card = btn.closest(".card");
+      const rufnr = card.dataset.rufnr;
+      if (favs.has(rufnr)) {
+        favs.delete(rufnr);
+        btn.classList.remove("active");
+        card.classList.remove("is-fav");
+        if (favOnly) card.remove();
+      } else {
+        favs.add(rufnr);
+        btn.classList.add("active");
+        card.classList.add("is-fav");
+      }
+      saveFavs();
+    });
+  });
+}
+
+searchInput.addEventListener("input", () => render(searchInput.value));
+
+clearBtn.addEventListener("click", () => {
+  searchInput.value = "";
+  searchInput.focus();
+  render("");
+});
+
+favFilterBtn.addEventListener("click", () => {
+  favOnly = !favOnly;
+  favFilterBtn.classList.toggle("active", favOnly);
+  favFilterBtn.setAttribute("aria-pressed", favOnly);
+  render(searchInput.value);
+});
+
+// ── Service Worker ──
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./service-worker.js");
+}
+</script>
+</body>
+</html>
