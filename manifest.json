@@ -1,7 +1,7 @@
 {
-  "name": "Funkrufnummern SG Sottrum",
+  "name": "Funkrufnummern LK Rotenburg",
   "short_name": "Funkliste",
-  "description": "Funkrufnummern der Feuerwehr SG Sottrum",
+  "description": "Funkrufnummern des Landkreises Rotenburg",
   "start_url": "./funkliste.html",
   "display": "standalone",
   "background_color": "#cc0000",
