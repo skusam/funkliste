@@ -86,10 +86,10 @@
     <rect x="214" y="222" width="70" height="50" rx="4" fill="#aa0000"/>
     <rect x="218" y="226" width="62" height="42" rx="3" fill="#bb1111"/>
 
-    <!-- SG Sottrum centered: x=245 (mid of full truck x54-436), y=317 -->
-    <text x="245" y="317" font-family="Arial Black, sans-serif" font-size="42" font-weight="900"
-          fill="white" text-anchor="middle" letter-spacing="6"
-          opacity="0.98" filter="url(#glow)">SG Sottrum</text>
+    <!-- LK Rotenburg centered: x=245 (mid of full truck x54-436), y=317 -->
+    <text x="245" y="317" font-family="Arial Black, sans-serif" font-size="38" font-weight="900"
+          fill="white" text-anchor="middle" letter-spacing="4"
+          opacity="0.98" filter="url(#glow)">LK Rotenburg</text>
 
     <!-- Blue light on cab roof -->
     <rect x="355" y="159" width="32" height="18" rx="9" fill="#222"/>
